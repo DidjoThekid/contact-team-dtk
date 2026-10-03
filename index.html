@@ -114,8 +114,11 @@
     <section class="card wide" aria-labelledby="t-cb">
       <h2 id="t-cb">Être contacté</h2>
       <p>Laissez votre adresse e-mail, la Team DTK revient vers vous.</p>
-      <form action="https://formsubmit.co/team-dtk@proton.me" method="POST">
+      <form action="https://formsubmit.co/team-dtk@outlook.com" method="POST">
         <input type="hidden" name="_subject" value="Nouveau contact – site Team DTK">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://team-dtk-call.vercel.app/">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
         <label for="email">Votre adresse e-mail</label>
         <input id="email" name="email" type="email" required autocomplete="email" placeholder="vous@exemple.com">
