@@ -1,4 +1,4 @@
-// Serveur MCP "Team DTK" : rappel téléphonique (Zadarma) + message e-mail (Resend)
+// Serveur MCP "Team DTK" : rappel téléphonique (Zadarma)
 // Compatible Claude (connecteur personnalisé) et ChatGPT (Apps SDK). Aucune dépendance.
 const crypto = require('crypto');
 
@@ -36,7 +36,7 @@ function normalizePhone(raw) {
   return s;
 }
 function checkPhone(e164) {
-  if (!/^\+[1-9]\d{7,14}$/.test(e164)) return 'Numéro invalide. Utilisez le format international, par exemple +33612345678.';
+if (!/^\+[1-9]\d{7,14}$/.test(e164)) return 'Numéro invalide. Utilisez le format international, par exemple +33612345678.';
   const prefixes = env('ALLOWED_PREFIXES', '+33').split(',').map((x) => x.trim());
   if (!prefixes.some((p) => e164.startsWith(p))) return 'Ce service rappelle uniquement les numéros de : ' + prefixes.join(', ') + '.';
   if (e164.startsWith('+33') && !/^\+33[1-79]\d{8}$/.test(e164)) return 'Numéro français non pris en charge (numéros spéciaux exclus).';
@@ -60,35 +60,12 @@ async function demanderRappel(args) {
   const phone = normalizePhone(args.numero);
   const bad = checkPhone(phone);
   if (bad) return { error: bad };
-  if (!openNow()) return { error: 'L\'équipe n\'est pas disponible maintenant. Horaires : ' + HOURS_TEXT + '. Proposez plutôt d\'envoyer un message.' };
+  if (!openNow()) return { error: 'L\'équipe n\'est pas disponible maintenant. Horaires : ' + HOURS_TEXT + '. Invitez la personne à réessayer pendant les horaires d\'ouverture.' };
   if (!allow('call:' + phone, 2, HOUR)) return { error: 'Trop de demandes pour ce numéro. Réessayez dans une heure.' };
-  if (!allow('call:global', parseInt(env('MAX_CALLS_PER_DAY', '30'), 10), DAY)) return { error: 'Limite quotidienne de rappels atteinte. Proposez d\'envoyer un message.' };
+  if (!allow('call:global', parseInt(env('MAX_CALLS_PER_DAY', '30'), 10), DAY)) return { error: 'Limite quotidienne de rappels atteinte. Réessayez demain.' };
   const out = await zadarma('/v1/request/callback/', { from: env('ZADARMA_SIP', '518175'), to: phone.slice(1) });
   if (out.status !== 'success') return { error: 'Le rappel a échoué : ' + (out.message || 'erreur Zadarma') };
   return { ok: 'Rappel lancé. L\'équipe Team DTK décroche d\'abord, puis le ' + phone + ' sonne dans quelques instants.' };
-}
-
-async function envoyerMessage(args) {
-  const email = String(args.email || '').trim();
-  const message = String(args.message || '').replace(/\r/g, '').trim().slice(0, 1000);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 254) return { error: 'Adresse e-mail invalide.' };
-  if (!message) return { error: 'Le message est vide.' };
-  if (!allow('mail:' + email.toLowerCase(), 3, HOUR)) return { error: 'Trop de messages depuis cette adresse. Réessayez plus tard.' };
-  if (!allow('mail:global', parseInt(env('MAX_MAILS_PER_DAY', '30'), 10), DAY)) return { error: 'Limite quotidienne atteinte. Écrivez directement à ' + env('MAIL_TO', 'team-dtk@outlook.com') + '.' };
-  if (!env('RESEND_API_KEY')) return { error: 'Envoi d\'e-mail non configuré côté serveur.' };
-  const r = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + env('RESEND_API_KEY'), 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: env('MAIL_FROM', 'Team DTK <onboarding@resend.dev>'),
-      to: [env('MAIL_TO', 'team-dtk@outlook.com')],
-      reply_to: email,
-      subject: 'Nouveau contact – site Team DTK',
-      text: 'De : ' + email + '\n\n' + message,
-    }),
-  });
-  if (!r.ok) return { error: 'L\'envoi a échoué (code ' + r.status + ').' };
-  return { ok: 'Message envoyé à la Team DTK. Ils répondront à ' + email + '.' };
 }
 
 const TOOLS = [
@@ -98,13 +75,6 @@ const TOOLS = [
 inputSchema: { type: 'object', properties: { numero: { type: 'string', description: 'Numéro à rappeler, format international (+33612345678) ou français (0612345678).' } }, required: ['numero'], additionalProperties: false },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     run: demanderRappel,
-  },
-  {
-    name: 'envoyer_message',
-    description: 'Envoie un message e-mail à la Team DTK, qui répondra à l\'adresse indiquée. À utiliser quand le rappel est impossible ou que la personne préfère écrire.',
-    inputSchema: { type: 'object', properties: { email: { type: 'string', description: 'Adresse e-mail de la personne, pour la réponse.' }, message: { type: 'string', description: 'Le message (1000 caractères maximum).' } }, required: ['email', 'message'], additionalProperties: false },
-    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
-    run: envoyerMessage,
   },
 ];
 
