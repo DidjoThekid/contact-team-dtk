@@ -1,0 +1,5 @@
+{
+  "name": "team-dtk-contact",
+  "private": true,
+  "engines": { "node": ">=20" }
+}
