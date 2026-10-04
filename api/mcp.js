@@ -16,17 +16,8 @@ function allow(key, max, windowMs) {
 }
 const HOUR = 3600e3, DAY = 24 * HOUR;
 
-/* ---------- Horaires (Europe/Paris) : mer 12-18h, sam/dim 13-18h ---------- */
-function openNow() {
-  if (env('IGNORE_HOURS') === '1') return true;
-  const p = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Paris', weekday: 'short', hour: 'numeric', hourCycle: 'h23' }).formatToParts(new Date());
-  const day = p.find((x) => x.type === 'weekday').value;
-  const h = parseInt(p.find((x) => x.type === 'hour').value, 10);
-  if (day === 'Wed') return h >= 12 && h < 18;
-  if (day === 'Sat' || day === 'Sun') return h >= 13 && h < 18;
-  return false;
-}
-const HOURS_TEXT = 'mercredi 12h-18h, samedi et dimanche 13h-18h (heure de Paris)';
+/* ---------- Horaires (Europe/Paris) : 24h/24h ---------- */
+function openNow() { return true; }
 
 /* ---------- Numéros de téléphone ---------- */
 function normalizePhone(raw) {
