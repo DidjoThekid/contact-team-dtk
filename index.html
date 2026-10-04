@@ -149,28 +149,47 @@
   var card = document.getElementById('rappel-card');
   var timer = null;
   var cbLoaded = false;
+  
   function loadCallbackWidget() {
     if (cbLoaded) return;
     cbLoaded = true;
-    window.ZCallbackWidgetLinkId = '8b0629db34db942bb328a326338a5d98';
-    window.ZCallbackWidgetDomain = 'my.zadarma.com';
+    
+    window.ZCallbackWidgetLinkId  = '8b0629db34db942bb328a326338a5d98';
+    window.ZCallbackWidgetDomain  = 'my.zadarma.com';
+    
     var lt = document.createElement('script');
     lt.type = 'text/javascript';
     lt.charset = 'utf-8';
     lt.async = true;
     lt.src = 'https://' + window.ZCallbackWidgetDomain + '/callbackWidget/js/main.min.js?v=1.15.4';
+    
     lt.onerror = function () {
       var status = document.getElementById('callback-status');
-      if (status) status.innerHTML = 'Le rappel est indisponible. <a href="mailto:team-dtk@proton.me">Écrivez-nous</a>.';
+      if (status) {
+        status.innerHTML = 'Le rappel n\'est pas disponible dans votre région. <a href="mailto:team-dtk@proton.me">Écrivez-nous directement</a>.';
+      }
     };
+    
+    lt.onload = function () {
+      var status = document.getElementById('callback-status');
+      if (status) {
+        status.innerHTML = '';
+      }
+    };
+    
     document.body.appendChild(lt);
   }
+  
   function showCallback() {
     if (!card || card.hidden === false) return;
     card.hidden = false;
     loadCallbackWidget();
-    card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    card.scrollIntoView({ 
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', 
+      block: 'center' 
+    });
   }
+  
   var callBox = document.getElementById('zadarma-webphone');
   if (callBox) {
     callBox.addEventListener('click', function (e) {
@@ -179,6 +198,7 @@
       timer = setTimeout(showCallback, DELAY);
     });
   }
+  
   var showBtn = document.getElementById('show-callback');
   if (showBtn) {
     showBtn.addEventListener('click', showCallback);
