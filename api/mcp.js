@@ -16,8 +16,9 @@ function allow(key, max, windowMs) {
 }
 const HOUR = 3600e3, DAY = 24 * HOUR;
 
-/* ---------- Horaires (Europe/Paris) : 24h/24h ---------- */
+/* ---------- Horaires : désactivés (rappels 24h/24) ---------- */
 function openNow() { return true; }
+const HOURS_TEXT = '24h/24, 7j/7';
 
 /* ---------- Numéros de téléphone ---------- */
 function normalizePhone(raw) {
