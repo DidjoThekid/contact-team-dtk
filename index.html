@@ -60,7 +60,7 @@
 <body>
 <main>
   <h1>Team DTK</h1>
-  <p class="lead">Appelez-nous directement depuis cette page, ou laissez votre adresse e-mail : nous vous recontactons dès que possible. <a href="https://guns.lol/teamdtk" target="_blank" rel="noopener">Retrouvez-nous sur guns.lol/teamdtk</a>.</p>
+  <p class="lead">Appelez-nous directement depuis cette page, ou laissez votre adresse e-mail : nous vous recontactons dès que possible. <a href="https://guns.lol/teamdtk" target="_blank" rel="noopener">guns.lol/teamdtk</a></p>
 
   <div class="grid">
     <!-- 1. Appeler : widget Webphone Zadarma -->
@@ -104,20 +104,10 @@
     </section>
 
     <!-- 2. Être rappelé : widget Callback Zadarma -->
-<script type="text/javascript">
-var ZCallbackWidgetLinkId  = '8b0629db34db942bb328a326338a5d98';
-var ZCallbackWidgetDomain  = 'my.zadarma.com';
-(function(){
-    var lt = document.createElement('script');
-    lt.type ='text/javascript';
-    lt.charset = 'utf-8';
-    lt.async = true;
-    lt.src = 'https://' + ZCallbackWidgetDomain + '/callbackWidget/js/main.min.js?v=1.15.4';
-    var sc = document.getElementsByTagName('script')[0];
-    if (sc) sc.parentNode.insertBefore(lt, sc);
-    else document.documentElement.firstChild.appendChild(lt);
-})();
-</script>
+    <section class="card" id="rappel-card" hidden aria-labelledby="t-rappel">
+      <h2 id="t-rappel">Être rappelé</h2>
+      <p id="callback-status">Le widget de rappel se charge...</p>
+    </section>
 
     <!-- 3. Être contacté : formulaire e-mail -->
     <section class="card wide" aria-labelledby="t-cb">
@@ -170,24 +160,29 @@ var ZCallbackWidgetDomain  = 'my.zadarma.com';
     lt.async = true;
     lt.src = 'https://' + window.ZCallbackWidgetDomain + '/callbackWidget/js/main.min.js?v=1.15.4';
     lt.onerror = function () {
-      document.getElementById('callback-status').innerHTML =
-        'Le rappel est indisponible. <a href="mailto:team-dtk@proton.me">Écrivez-nous</a>.';
+      var status = document.getElementById('callback-status');
+      if (status) status.innerHTML = 'Le rappel est indisponible. <a href="mailto:team-dtk@proton.me">Écrivez-nous</a>.';
     };
     document.body.appendChild(lt);
   }
   function showCallback() {
-    if (!card.hidden) return;
+    if (!card || card.hidden === false) return;
     card.hidden = false;
     loadCallbackWidget();
     card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
   }
   var callBox = document.getElementById('zadarma-webphone');
-  callBox.addEventListener('click', function (e) {
-    if (e.target.closest('a,button.linkbtn')) return;
-    clearTimeout(timer);
-    timer = setTimeout(showCallback, DELAY);
-  });
-  document.getElementById('show-callback').addEventListener('click', showCallback);
+  if (callBox) {
+    callBox.addEventListener('click', function (e) {
+      if (e.target.closest('a,button.linkbtn')) return;
+      clearTimeout(timer);
+      timer = setTimeout(showCallback, DELAY);
+    });
+  }
+  var showBtn = document.getElementById('show-callback');
+  if (showBtn) {
+    showBtn.addEventListener('click', showCallback);
+  }
 })();
 </script>
 </body>
