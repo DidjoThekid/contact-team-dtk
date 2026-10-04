@@ -104,11 +104,20 @@
     </section>
 
     <!-- 2. Être rappelé : widget Callback Zadarma -->
-    <section class="card" id="rappel-card" aria-labelledby="t-rappel" hidden>
-      <h2 id="t-rappel">Être rappelé</h2>
-      <p>Personne n'a répondu ? Cliquez sur le bouton de rappel qui s'affiche en bas de la page, saisissez votre numéro et nous vous rappelons.</p>
-      <p id="callback-status" role="status"></p>
-    </section>
+<script type="text/javascript">
+var ZCallbackWidgetLinkId  = '8b0629db34db942bb328a326338a5d98';
+var ZCallbackWidgetDomain  = 'my.zadarma.com';
+(function(){
+    var lt = document.createElement('script');
+    lt.type ='text/javascript';
+    lt.charset = 'utf-8';
+    lt.async = true;
+    lt.src = 'https://' + ZCallbackWidgetDomain + '/callbackWidget/js/main.min.js?v=1.15.4';
+    var sc = document.getElementsByTagName('script')[0];
+    if (sc) sc.parentNode.insertBefore(lt, sc);
+    else document.documentElement.firstChild.appendChild(lt);
+})();
+</script>
 
     <!-- 3. Être contacté : formulaire e-mail -->
     <section class="card wide" aria-labelledby="t-cb">
